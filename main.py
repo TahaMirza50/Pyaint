@@ -56,6 +56,22 @@ def draw_mouse_position_text(win):
                 text_surface = pos_font.render("Swap Toolbar", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
+            if button.name == "Arrow":
+                text_surface = pos_font.render("Arrow", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.name == "Line":
+                text_surface = pos_font.render("Line", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.name == "Pen":
+                text_surface = pos_font.render("Pen", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.name == "Pencil":
+                text_surface = pos_font.render("Pencil", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
             r,g,b = button.color
             text_surface = pos_font.render("( " + str(r) + ", " + str(g) + ", " + str(b) + " )", 1, BLACK)
             
@@ -289,12 +305,12 @@ while run:
                         Change = not Change
                         for i in range(10):
                             if i == 0:
-                                buttons.append(Button(HEIGHT - 2*button_width,(i*button_height)+5,button_width,button_height,WHITE,name="Change"))
+                                buttons.append(Button(WIDTH + 0.5*button_width,(i*button_height)+5,button_width,button_height,WHITE,name="Change"))
                             else:
                                 if Change == False:  
-                                    buttons.append(Button(HEIGHT - 2*button_width,(i*button_height)+5,button_width,button_height,WHITE,"B"+str(i-1), BLACK))
+                                    buttons.append(Button(WIDTH + 0.5*button_width,(i*button_height)+5,button_width,button_height,WHITE,"B"+str(i-1), BLACK))
                                 if Change == True:
-                                   buttons.append(Button(HEIGHT - 2*button_width,(i*button_height)+5,button_width,button_height,WHITE,"C"+str(i-1), BLACK))
+                                   buttons.append(Button(WIDTH + 0.5*button_width,(i*button_height)+5,button_width,button_height,WHITE,"C"+str(i-1), BLACK))
                         break
                      
                     if button.name == "Brush":
