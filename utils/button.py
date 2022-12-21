@@ -1,4 +1,3 @@
-from turtle import pos
 from .settings import *
 
 class Button:
@@ -13,7 +12,7 @@ class Button:
         self.text_color = text_color
         self.image_url = image_url
         self.name = name
-
+    
     def draw(self, win):
         # Draws button with an image
         if self.image_url != "/":

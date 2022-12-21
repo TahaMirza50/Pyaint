@@ -43,7 +43,7 @@ COLORS.append(PURPLE)
 
 FPS             = 120
 WIDTH, HEIGHT   = 600, 700
-ROWS = COLS     = 40    #increase to have smaller pixels
+ROWS = COLS     = 60    #increase to have smaller pixels
 TOOLBAR_HEIGHT  = HEIGHT - WIDTH
 PIXEL_SIZE      = WIDTH // COLS
 BG_COLOR        = WHITE
@@ -55,15 +55,16 @@ def get_font(size):
 
 FPS             = 120
 
-WIDTH, HEIGHT   = 600, 700
+WIDTH, HEIGHT   = 975, 700
 
-ROWS = COLS     = 40    #increase to have smaller pixels
+ROWS            = 40 
+COLS            = 65    #increase to have smaller pixels
 
-TOOLBAR_HEIGHT  = HEIGHT - WIDTH
+TOOLBAR_HEIGHT  = HEIGHT - 600
 
 RIGHT_TOOLBAR_WIDTH = 75
 
-PIXEL_SIZE      = WIDTH // COLS
+PIXEL_SIZE      = 600 // 40
 
 BG_COLOR        = WHITE
 
