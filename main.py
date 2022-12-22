@@ -207,6 +207,93 @@ def fill_bucket(row, col, color):
     if inBounds(x, y - 1) == 1 and vis[x][y - 1] == 0 and grid[x][y - 1] == preColor:
       obj.append([x, y - 1])
       vis[x][y - 1] = 1
+      
+      
+def make_arrow(row, col, color):
+    global LAST_POS, BRUSH_SIZE
+    last_pos = LAST_POS
+    BRUSH_SIZE = 1
+    grid[row][col] = drawing_color
+    if(LAST_POS == (-1, -1)):
+        LAST_POS = (row, col)
+        return
+    
+    second_pos = (row, col)
+    row_diff = abs(last_pos[0] - second_pos[0])
+    col_diff = abs(last_pos[1] - second_pos[1])
+    
+    if(col_diff == 0): # if straight arrow up/down
+        if(last_pos[0] > second_pos[0]): #up arrow
+            for i in range(row_diff):
+                grid[second_pos[0] + i][col] = drawing_color
+            for i in range(1,3): #draws arrowhead
+                grid[second_pos[0] + i][second_pos[1] + i] = drawing_color
+                grid[second_pos[0] + i][second_pos[1] - i] = drawing_color
+        else:
+            for i in range(row_diff): #down arrow
+                grid[last_pos[0] + i][col] = drawing_color
+            for i in range(1,3): #draws arrowhead
+                grid[second_pos[0] - i][second_pos[1] + i] = drawing_color
+                grid[second_pos[0] - i][second_pos[1] - i] = drawing_color
+                
+    elif(row_diff == 0):# if straight arrow left/right
+        if(last_pos[1] > second_pos[1]): #left arrow
+            for i in range(col_diff):
+                grid[row][second_pos[1]+i] = drawing_color
+            for i in range(1,3): #draws arrowhead
+                grid[second_pos[0] - i][second_pos[1] + i] = drawing_color
+                grid[second_pos[0] + i][second_pos[1] + i] = drawing_color
+        else:
+            for i in range(col_diff):
+                grid[row][last_pos[1]+i] = drawing_color
+            for i in range(1,3): #draws arrowhead
+                grid[second_pos[0] - i][second_pos[1] - i] = drawing_color
+                grid[second_pos[0] + i][second_pos[1] - i] = drawing_color
+    
+    elif row_diff == col_diff:
+        if((last_pos[0] > second_pos[0]) and (last_pos[1] < second_pos[1])): # upper right diagonal
+            r, c = last_pos
+            while((r, c) != second_pos):
+                grid[r][c] = drawing_color
+                r -= 1; c += 1
+            del r, c
+            for i in range(1,3):
+                grid[row+i][col] = drawing_color
+                grid[row][col-i] = drawing_color
+                
+        elif ((last_pos[0] > second_pos[0]) and (last_pos[1] > second_pos[1])): # upper left diagonal
+            r, c = last_pos
+            while((r, c) != second_pos):
+                grid[r][c] = drawing_color
+                r -= 1; c -= 1
+            del r, c
+            for i in range(1,3):
+                grid[row][col+i] = drawing_color
+                grid[row+i][col] = drawing_color
+                
+        elif ((last_pos[0] < second_pos[0]) and (last_pos[1] > second_pos[1])): # lower left diagonal
+            r, c = last_pos
+            while((r, c) != second_pos):
+                grid[r][c] = drawing_color
+                r += 1; c -= 1
+            del r, c
+            for i in range(1,3):
+                grid[row-i][col] = drawing_color
+                grid[row][col+i] = drawing_color
+        
+        elif ((last_pos[0] < second_pos[0]) and (last_pos[1] < second_pos[1])): # lower right diagonal
+            r, c = last_pos
+            while((r, c) != second_pos):
+                grid[r][c] = drawing_color
+                r += 1; c += 1
+            del r, c
+            for i in range(1,3):
+                grid[row-i][col] = drawing_color
+                grid[row][col-i] = drawing_color
+        
+            
+    
+    LAST_POS = (-1,-1)
 
 
 run = True
@@ -285,6 +372,12 @@ while run:
 
                 elif STATE == "FILL":
                     fill_bucket(row, col, drawing_color)
+                
+                elif STATE =="ARROW":
+                    make_arrow(row, col, drawing_color)
+                    
+                if STATE != "ARROW":
+                    LAST_POS = (-1,-1)
 
             except IndexError:
                 for button in buttons:
@@ -315,6 +408,10 @@ while run:
                      
                     if button.name == "Brush":
                         STATE = "COLOR"
+                        break
+                    
+                    if button.name == "Arrow":
+                        STATE = "ARROW"
                         break
                     
                     drawing_color = button.color
