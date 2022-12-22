@@ -1,3 +1,5 @@
+import pygame as pygame
+
 from utils import *
 
 WIN = pygame.display.set_mode((WIDTH + RIGHT_TOOLBAR_WIDTH, HEIGHT))
@@ -72,10 +74,12 @@ def draw_mouse_position_text(win):
                 text_surface = pos_font.render("Pencil", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
+
             if button.name == "Multi-Head":
                 text_surface = pos_font.render("Draw Multi-Head Arrow", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
+
             r,g,b = button.color
             text_surface = pos_font.render("( " + str(r) + ", " + str(g) + ", " + str(b) + " )", 1, BLACK)
             
@@ -154,8 +158,31 @@ def paint_using_brush(row, col, size):
             for j in range(BRUSH_SIZE*2-1):
                 if r+i<0 or c+j<0 or r+i>=ROWS or c+j>=COLS:
                     continue
-                grid[r+i][c+j] = drawing_color         
+                grid[r+i][c+j] = drawing_color    
 
+def paint_using_pen(row, col,size):       
+    r = row-BRUSH_SIZE+1
+    c = col-BRUSH_SIZE+1
+    
+    for i in range(BRUSH_SIZE*2-1):
+        for j in range(BRUSH_SIZE*2-1):
+            if r+i<0 or c+j<0 or r+i>=ROWS or c+j>=COLS or (i==2 and j == 2) or (i==0 and j == 0) or (i==0 and j ==1) or (i==2 and j ==1):
+                continue
+            grid[r+i][c+j] = drawing_color           
+
+def paint_using_pencil(row, col,size): 
+    R = drawing_color[0]
+    G = drawing_color[1]
+    B = drawing_color[2]
+    if R<200:
+        R=R+55
+    if G<200:
+        G=G+55
+    if B<200:
+        B=B+55
+    light_color = (R,G,B)
+    draw_button.color = light_color
+    grid[row][col] = light_color
 # Checks whether the coordinated are within the canvas
 def inBounds(row, col):
     if row < 0 or col < 0:
@@ -373,7 +400,7 @@ rtb_x = WIDTH + RIGHT_TOOLBAR_WIDTH/2
 brush_widths = [
     Button(rtb_x - size_small/2, 480, size_small, size_small, drawing_color, None, "ellipse"),    
     Button(rtb_x - size_medium/2, 510, size_medium, size_medium, drawing_color, None, "ellipse") , 
-    Button(rtb_x - size_large/2, 550, size_large, size_large, drawing_color, None, "ellipse")  
+    Button(rtb_x - size_large/2, 550, size_large, size_large, drawing_color, None, "ellipse")
 ]
 
 button_y_top_row = HEIGHT - TOOLBAR_HEIGHT/2  - button_height - 1
@@ -430,6 +457,12 @@ while run:
                 elif STATE == "FILL":
                     fill_bucket(row, col, drawing_color)
                 
+                elif STATE == "PEN":
+                    paint_using_pen(row, col, BRUSH_SIZE)
+
+                elif STATE == "PENCIL":
+                    paint_using_pencil(row, col, BRUSH_SIZE)
+
                 elif STATE =="ARROW":
                     make_arrow(row, col, drawing_color)
                             
@@ -439,6 +472,7 @@ while run:
                     if not button.clicked(pos):
                         continue
                     if button.text == "Clear":
+                        FIX_SIZE = False
                         grid = init_grid(ROWS, COLS, BG_COLOR)
                         drawing_color = BLACK
                         draw_button.color = drawing_color
@@ -446,10 +480,12 @@ while run:
                         break
 
                     if button.name == "FillBucket":                        
+                        FIX_SIZE = False
                         STATE = "FILL"
                         break
                     
                     if button.name == "Change":
+                        FIX_SIZE = False
                         Change = not Change
                         for i in range(10):
                             if i == 0:
@@ -463,7 +499,23 @@ while run:
                      
                     if button.name == "Brush":
                         STATE = "COLOR"
+                        FIX_SIZE = False
                         break
+
+
+                    if button.name == "Pen":
+                        STATE = "PEN"
+                        BRUSH_SIZE = 2
+                        FIX_SIZE = True
+                        break
+
+                    if button.name == "Pencil":
+                        STATE = "PENCIL"
+                        BRUSH_SIZE = 1
+                        FIX_SIZE = True
+                        break
+
+
                     
                     if button.name == "Arrow":
                         STATE = "ARROW"
@@ -475,6 +527,7 @@ while run:
                         MULTI_HEAD = not MULTI_HEAD
                         break
                     
+
                     drawing_color = button.color
                     draw_button.color = drawing_color
                     
@@ -482,6 +535,8 @@ while run:
                 
                 for button in brush_widths:
                     if not button.clicked(pos):
+                        continue
+                    if FIX_SIZE:
                         continue
                     #set brush width
                     if button.width == size_small:
@@ -492,7 +547,8 @@ while run:
                         BRUSH_SIZE = 3
 
                     STATE = "COLOR"
-        
+
+                
     if STATE != "ARROW":
             LAST_POS = (-1,-1)
             MULTI_HEAD = False
@@ -500,6 +556,7 @@ while run:
                 if button.name == "Multi-Head":
                     buttons.remove(button)
                 
+
     draw(WIN, grid, buttons)
 
 pygame.quit()
