@@ -434,7 +434,7 @@ buttons.append(Button(WIDTH - 3*button_space, button_y_bot_row,button_width-5, b
 buttons.append(Button(WIDTH - 4*button_space, button_y_bot_row,button_width-5, button_height-5, name = "Pen",image_url="assets/Pen.png")) #Pen
 buttons.append(Button(WIDTH - 4*button_space, button_y_top_row,button_width-5, button_height-5, name = "Pencil",image_url="assets/Pencil.png")) #Pencil
 
-
+FIX_SIZE = False
 draw_button = Button(5, HEIGHT - TOOLBAR_HEIGHT/2 - 30, 60, 60, drawing_color)
 buttons.append(draw_button)
 
