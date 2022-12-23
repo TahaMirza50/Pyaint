@@ -79,6 +79,16 @@ def draw_mouse_position_text(win):
                 text_surface = pos_font.render("Draw Multi-Head Arrow", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
+            
+            if button.name == "CB1":
+                text_surface = pos_font.render("Gradient Brush", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            
+            if button.name == "CB2":
+                text_surface = pos_font.render("Snowflake", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
 
             r,g,b = button.color
             text_surface = pos_font.render("( " + str(r) + ", " + str(g) + ", " + str(b) + " )", 1, BLACK)
@@ -238,8 +248,71 @@ def fill_bucket(row, col, color):
     if inBounds(x, y - 1) == 1 and vis[x][y - 1] == 0 and grid[x][y - 1] == preColor:
       obj.append([x, y - 1])
       vis[x][y - 1] = 1
+    
       
-      
+def paint_using_custom_brush_1(row, col, color):
+    R = drawing_color[0]
+    G = drawing_color[1]
+    B = drawing_color[2]
+    if R<200:
+        R=R+55
+    if G<200:
+        G=G+55
+    if B<200:
+        B=B+55
+    light_color = (R,G,B)
+    
+    grid[row][col] = drawing_color
+    
+    up = grid[row - 1][col] == drawing_color
+    down = grid[row + 1][col] == drawing_color
+    left = grid[row][col - 1] == drawing_color
+    right = grid[row][col + 1] == drawing_color
+    
+    if up and down and left and right:
+        return
+    
+    elif up:
+        grid[row][col - 1] = light_color
+        grid[row + 1][col] = light_color
+        grid[row][col + 1] = light_color
+        
+    elif down:
+        grid[row][col + 1] = light_color
+        grid[row][col - 1] = light_color
+        grid[row - 1][col] = light_color
+    
+    elif right:
+        grid[row][col - 1] = light_color
+        grid[row + 1][col] = light_color
+        grid[row - 1][col] = light_color
+        
+    elif left:
+        grid[row][col + 1] = light_color
+        grid[row + 1][col] = light_color
+        grid[row - 1][col] = light_color
+    
+    else:
+        grid[row][col + 1] = light_color
+        grid[row][col - 1] = light_color
+        grid[row + 1][col] = light_color
+        grid[row - 1][col] = light_color
+        
+
+def paint_using_custom_brush_2(row, col, color):
+    grid[row][col] = drawing_color
+    
+    for i in range(1,4):
+        grid[row + i][col] = drawing_color
+        grid[row][col + i] = drawing_color
+        grid[row + i][col + i] = drawing_color
+        grid[row -i][col] = drawing_color
+        grid[row][col - i] = drawing_color
+        grid[row - i][col - i] = drawing_color
+        grid[row -i][col + i] = drawing_color
+        grid[row +i][col - i] = drawing_color
+
+          
 def make_arrow(row, col, color):
     global LAST_POS, BRUSH_SIZE
     last_pos = LAST_POS
@@ -463,8 +536,14 @@ while run:
                 elif STATE == "PENCIL":
                     paint_using_pencil(row, col, BRUSH_SIZE)
 
-                elif STATE =="ARROW":
+                elif STATE == "ARROW":
                     make_arrow(row, col, drawing_color)
+                
+                elif STATE == "CB1":
+                    paint_using_custom_brush_1(row, col, drawing_color)
+                    
+                elif STATE == "CB2":
+                    paint_using_custom_brush_2(row, col, drawing_color)
                             
 
             except IndexError:
@@ -500,9 +579,22 @@ while run:
                     if button.name == "Brush":
                         STATE = "COLOR"
                         FIX_SIZE = False
+                        custom_brushes = []
+                        custom_brushes.append(Button(WIDTH - 11.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB1", image_url="assets/Gradient-Brush.png"))
+                        custom_brushes.append(Button(WIDTH - 10.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB2", image_url="assets/Snowflake.png"))
+                        buttons.extend(custom_brushes)
                         break
 
-
+                    if button.name == "CB1":
+                        STATE = "CB1" 
+                        BRUSH_SIZE = 1
+                        break
+                    
+                    if button.name == "CB2":
+                        STATE = "CB2" 
+                        BRUSH_SIZE = 3
+                        break
+                    
                     if button.name == "Pen":
                         STATE = "PEN"
                         BRUSH_SIZE = 2
@@ -555,6 +647,13 @@ while run:
             for button in buttons:
                 if button.name == "Multi-Head":
                     buttons.remove(button)
+    
+    if STATE != "COLOR" and STATE !="CB1" and STATE !="CB2":
+        for button in buttons:
+            if button.name == "CB1":
+                buttons.remove(button)
+            if button.name == "CB2":
+                buttons.remove(button)
                 
 
     draw(WIN, grid, buttons)
