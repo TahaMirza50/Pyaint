@@ -10,7 +10,7 @@ We have implemented these features:
 - [x] Dotted lines
 - [x] Arrows
 - [x] Multilines
-- [ ] Shaped Brushes
+- [x] Shaped Brushes
 - [ ] Defining your own Brush
 - [ ] Brush custom width and height and definition
 - [ ] Antialiasing
@@ -22,3 +22,4 @@ We have implemented these features:
 <a  href="https://github.com/TahaMirza50">  <img  src="https://github.com/TahaMirza50.png?size=50" width="50" height="50"></a>
 <a  href="https://github.com/YunusMXV">  <img  src="https://github.com/YunusMXV.png?size=50" width="50" height="50"></a>
 <a  href="https://github.com/hamzakbarali">  <img  src="https://github.com/hamzakbarali.png?size=50" width="50" height="50"></a>
+<a  href="https://github.com/shariqanwar20">  <img  src="https://github.com/shariqanwar20.png?size=50" width="50" height="50"></a>
