@@ -79,7 +79,8 @@ def draw_mouse_position_text(win):
                 text_surface = pos_font.render("Draw Multi-Head Arrow", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
-            if button.text == "Anti-Aliasing":
+            
+            if button.name == "Anti-Aliasing":
                 text_surface = pos_font.render("Anti-Aliasing", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
@@ -161,9 +162,11 @@ def get_row_col_from_pos(pos):
         raise IndexError
     return row, col
 
+
 def paint_using_brush(row, col, size):
     if BRUSH_SIZE == 1:
         grid[row][col] = drawing_color
+        AntiAliasingGrid.append((row, col))
     else: #for values greater than 1        
         r = row-BRUSH_SIZE+1
         c = col-BRUSH_SIZE+1
@@ -172,7 +175,10 @@ def paint_using_brush(row, col, size):
             for j in range(BRUSH_SIZE*2-1):
                 if r+i<0 or c+j<0 or r+i>=ROWS or c+j>=COLS:
                     continue
-                grid[r+i][c+j] = drawing_color    
+                grid[r+i][c+j] = drawing_color
+                AntiAliasingGrid.append((r+i, c+j))
+
+
 
 def paint_using_pen(row, col,size):       
     r = row-BRUSH_SIZE+1
@@ -182,8 +188,10 @@ def paint_using_pen(row, col,size):
         for j in range(BRUSH_SIZE*2-1):
             if r+i<0 or c+j<0 or r+i>=ROWS or c+j>=COLS or (i==2 and j == 2) or (i==0 and j == 0) or (i==0 and j ==1) or (i==2 and j ==1):
                 continue
-            grid[r+i][c+j] = drawing_color           
-AntiAliasingGrid = []
+            grid[r+i][c+j] = drawing_color
+            AntiAliasingGrid.append((r+i,c+j))
+
+
 def paint_using_pencil(row, col,size): 
     R = drawing_color[0]
     G = drawing_color[1]
@@ -198,22 +206,27 @@ def paint_using_pencil(row, col,size):
     draw_button.color = light_color
     grid[row][col] = light_color
     AntiAliasingGrid.append((row,col))
-def AntiAliasing_conversion(AntiAliasingG):
+    
+    
+def antialiasing_conversion(AntiAliasingG):
     for Coordinate in AntiAliasingGrid:
         Row = Coordinate[0]
         Column = Coordinate[1]
+        
         if (Row < 39 and Row > 0) and (Column < 64 and Column > 0):
             NearColors = [(grid[Row][Column+1]), (grid[Row][Column-1]),(grid[Row+1][Column]), (grid[Row-1][Column])]
             AvgNearColors = tuple(c / 4 for c in(tuple(sum(x) for x in zip(*NearColors))))
             color = grid[Row][Column]
             SumOfColors = tuple(x + y for x, y in zip(AvgNearColors, color))
             grid[Row][Column] = tuple_divided = tuple(x / 2 for x in SumOfColors)
+            
         elif (Row == 0 or Row == 39) and (Column < 64 and Column > 0):
             NearColors = [(grid[Row][Column+1]), (grid[Row][Column-1])]
             AvgNearColors = tuple(c / 2 for c in(tuple(sum(x) for x in zip(*NearColors))))
             color = grid[Row][Column]
             SumOfColors = tuple(x + y for x, y in zip(AvgNearColors, color))
             grid[Row][Column] = tuple_divided = tuple(x / 2 for x in SumOfColors)
+            
         elif (Column == 0 or Column == 64) and (Row < 39 and Row > 0):
             NearColors = [(grid[Row+1][Column]), (grid[Row-1][Column])]
             AvgNearColors = tuple(c / 2 for c in(tuple(sum(x) for x in zip(*NearColors))))
@@ -253,6 +266,7 @@ def fill_bucket(row, col, color):
     preColor = grid[x][y]
    
     grid[x][y] = color
+    AntiAliasingGrid.append((x,y))
        
     # Popping front pair of queue
     obj.pop(0)
@@ -526,7 +540,7 @@ for i in range(10):
     else: 
         buttons.append(Button((WIDTH) + 0.5*button_width,(i*button_height)+5,button_width,button_height,WHITE,"B"+str(i-1), BLACK))#append tools
 
-buttons.append(Button(WIDTH + 0.1*button_width,(button_height + 375)+5,button_width + 30,button_height,WHITE,"Anti-Aliasing", BLACK))
+buttons.append(Button(WIDTH + 0.4*button_width,(button_height + 375)+5,button_width,button_height,WHITE, name="Anti-Aliasing", image_url="assets/anti-aliasing.png"))
 buttons.append(Button(WIDTH - button_space, button_y_top_row, button_width, button_height, WHITE, "Erase", BLACK))  # Erase Button
 buttons.append(Button(WIDTH - button_space, button_y_bot_row, button_width, button_height, WHITE, "Clear", BLACK))  # Clear Button
 buttons.append(Button(WIDTH - 2*button_space, button_y_top_row,button_width-5, button_height-5, name = "FillBucket",image_url="assets/paint-bucket.png")) #FillBucket
@@ -537,6 +551,7 @@ buttons.append(Button(WIDTH - 4*button_space, button_y_bot_row,button_width-5, b
 buttons.append(Button(WIDTH - 4*button_space, button_y_top_row,button_width-5, button_height-5, name = "Pencil",image_url="assets/Pencil.png")) #Pencil
 
 FIX_SIZE = False
+AntiAliasingGrid = []
 draw_button = Button(5, HEIGHT - TOOLBAR_HEIGHT/2 - 30, 60, 60, drawing_color)
 buttons.append(draw_button)
 
@@ -648,12 +663,10 @@ while run:
                         MULTI_HEAD = not MULTI_HEAD
                         break
                     
-                    if button.text == "Anti-Aliasing":
-                        if button.color == WHITE and (STATE == "PENCIL"):
-                            button.color = AQUA
-                            AntiAliasing_conversion(AntiAliasingGrid)
+                    if button.name == "Anti-Aliasing":
+                        if (STATE == "PENCIL") or (STATE == "PEN") or (STATE == "FILL") or (STATE == "COLOR"): 
+                            antialiasing_conversion(AntiAliasingGrid)
                             break
-                        button.color = WHITE
                         break
 
                     drawing_color = button.color
