@@ -13,7 +13,7 @@ We have implemented these features:
 - [x] Shaped Brushes
 - [ ] Defining your own Brush
 - [ ] Brush custom width and height and definition
-- [ ] Antialiasing
+- [x] Antialiasing
 - [x] Pencil tool
 - [x] Pen tool
 
@@ -23,3 +23,12 @@ We have implemented these features:
 <a  href="https://github.com/YunusMXV">  <img  src="https://github.com/YunusMXV.png?size=50" width="50" height="50"></a>
 <a  href="https://github.com/hamzakbarali">  <img  src="https://github.com/hamzakbarali.png?size=50" width="50" height="50"></a>
 <a  href="https://github.com/shariqanwar20">  <img  src="https://github.com/shariqanwar20.png?size=50" width="50" height="50"></a>
+
+## Project Contributors:
+
+<a href="https://github.com/owaisali8/Pyaint/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=owaisali8/Pyaint" />
+</a>
+
+## Screenshots:
+<i>< will be added later ></i>
