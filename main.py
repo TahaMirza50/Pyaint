@@ -128,6 +128,12 @@ def draw(win, grid, buttons):
     for button in buttons:
         button.draw(win)
 
+    for dropdown in drop_downs:
+        dropdown.draw(win)
+        
+    for text in texts:
+        text.draw(win)
+        
     draw_brush_widths(win)
     draw_mouse_position_text(win)
     pygame.display.update()
@@ -530,6 +536,8 @@ button_space = 42
 
 # Adding Buttons
 buttons = []
+drop_downs = []
+texts = []
 
 for i in range(int(len(COLORS)/2)):
     buttons.append( Button(100 + button_space * i, button_y_top_row, button_width, button_height, COLORS[i]) )
@@ -670,7 +678,11 @@ while run:
                         break
                     
                     if button.name == "Add-Brush":
-                        
+                        drop_downs.append(Dropdown(WIDTH - 7.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp1"))
+                        drop_downs.append(Dropdown(WIDTH - 5.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp2"))
+                        texts.append(Text(WIDTH - 8.5*button_space, button_y_top_row+5, get_font(12), 'Hegiht:'))
+                        texts.append(Text(WIDTH - 6.5*button_space, button_y_top_row+5, get_font(12), 'Width:'))
+                        STATE = "UB1"
                         break
                     
                     if button.name == "Anti-Aliasing":
@@ -698,6 +710,13 @@ while run:
                         BRUSH_SIZE = 3
 
                     STATE = "COLOR"
+                
+                for dropdown in drop_downs:
+                    if dropdown.name == "dp1":
+                        dropdown.handle_event(event)
+                    
+                    if dropdown.name == "dp2":
+                        dropdown.handle_event(event)
 
                 
     if STATE != "ARROW":
@@ -707,12 +726,16 @@ while run:
                 if button.name == "Multi-Head":
                     buttons.remove(button)
     
-    if STATE != "COLOR" and STATE !="CB1" and STATE !="CB2":
+    if STATE != "COLOR" and STATE !="CB1" and STATE !="CB2" and STATE != "UB1":
         for button in buttons:
             if button.name == "CB1":
                 buttons.remove(button)
-            if button.name == "CB2":
+            if button.name == "CB2" or button.name == "Add-Brush":
                 buttons.remove(button)
+                
+    if STATE != "UB1":
+        drop_downs = []
+        texts = []
                 
 
     draw(WIN, grid, buttons)
