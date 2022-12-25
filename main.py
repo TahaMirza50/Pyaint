@@ -94,6 +94,11 @@ def draw_mouse_position_text(win):
                 text_surface = pos_font.render("Snowflake", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
+            
+            if button.name =="Add-Brush":
+                text_surface = pos_font.render("Add Custom Brush", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
 
             r,g,b = button.color
             text_surface = pos_font.render("( " + str(r) + ", " + str(g) + ", " + str(b) + " )", 1, BLACK)
@@ -626,6 +631,7 @@ while run:
                         custom_brushes = []
                         custom_brushes.append(Button(WIDTH - 11.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB1", image_url="assets/Gradient-Brush.png"))
                         custom_brushes.append(Button(WIDTH - 10.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB2", image_url="assets/Snowflake.png"))
+                        custom_brushes.append(Button(WIDTH - 9.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "Add-Brush", image_url="assets/plus.png"))
                         buttons.extend(custom_brushes)
                         break
 
@@ -661,6 +667,10 @@ while run:
                     
                     if button.name == "Multi-Head":
                         MULTI_HEAD = not MULTI_HEAD
+                        break
+                    
+                    if button.name == "Add-Brush":
+                        
                         break
                     
                     if button.name == "Anti-Aliasing":
