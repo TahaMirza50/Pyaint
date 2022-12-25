@@ -365,6 +365,21 @@ def paint_using_custom_brush_2(row, col, color):
         grid[row -i][col + i] = drawing_color
         grid[row +i][col - i] = drawing_color
 
+
+def paint_using_user_brush(row, col, color):
+    height = int(drop_downs[0].selected_option)
+    width = int(drop_downs[1].selected_option)
+    
+    grid[row][col] = drawing_color
+    
+    for i in range(height):
+        grid[row+i][col] = drawing_color
+        grid[row-i][col] = drawing_color
+        
+    for i in range(width):
+        grid[row][col+i] = drawing_color
+        grid[row][col-i] = drawing_color
+
           
 def make_arrow(row, col, color):
     global LAST_POS, BRUSH_SIZE
@@ -601,6 +616,9 @@ while run:
                     
                 elif STATE == "CB2":
                     paint_using_custom_brush_2(row, col, drawing_color)
+                    
+                elif STATE == "UB1":
+                    paint_using_user_brush(row, col, drawing_color)
                             
 
             except IndexError:
