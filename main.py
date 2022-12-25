@@ -369,6 +369,7 @@ def paint_using_custom_brush_2(row, col, color):
 def paint_using_user_brush(row, col, color):
     height = int(drop_downs[0].selected_option)
     width = int(drop_downs[1].selected_option)
+    diag = int(drop_downs[2].selected_option)
     
     grid[row][col] = drawing_color
     
@@ -379,6 +380,12 @@ def paint_using_user_brush(row, col, color):
     for i in range(width):
         grid[row][col+i] = drawing_color
         grid[row][col-i] = drawing_color
+
+    for i in range(diag):
+        grid[row+i][col+i] = drawing_color
+        grid[row-i][col-i] = drawing_color
+        grid[row+i][col-i] = drawing_color
+        grid[row-i][col+i] = drawing_color
 
           
 def make_arrow(row, col, color):
@@ -656,8 +663,8 @@ while run:
                         FIX_SIZE = False
                         custom_brushes = []
                         custom_brushes.append(Button(WIDTH - 11.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB1", image_url="assets/Gradient-Brush.png"))
-                        custom_brushes.append(Button(WIDTH - 10.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB2", image_url="assets/Snowflake.png"))
-                        custom_brushes.append(Button(WIDTH - 9.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "Add-Brush", image_url="assets/plus.png"))
+                        custom_brushes.append(Button(WIDTH - 11.5*button_space, button_y_bot_row,button_width-5, button_height-5, BLACK, name = "CB2", image_url="assets/Snowflake.png"))
+                        custom_brushes.append(Button(WIDTH - 10.5*button_space, button_y_bot_row,button_width-5, button_height-5, BLACK, name = "Add-Brush", image_url="assets/plus.png"))
                         buttons.extend(custom_brushes)
                         break
 
@@ -698,8 +705,10 @@ while run:
                     if button.name == "Add-Brush":
                         drop_downs.append(Dropdown(WIDTH - 7.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp1"))
                         drop_downs.append(Dropdown(WIDTH - 5.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp2"))
-                        texts.append(Text(WIDTH - 8.5*button_space, button_y_top_row+5, get_font(12), 'Hegiht:'))
+                        drop_downs.append(Dropdown(WIDTH - 9.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp3"))
+                        texts.append(Text(WIDTH - 8.5*button_space, button_y_top_row+5, get_font(12), 'Height:'))
                         texts.append(Text(WIDTH - 6.5*button_space, button_y_top_row+5, get_font(12), 'Width:'))
+                        texts.append(Text(WIDTH - 10.5*button_space-5, button_y_top_row+5, get_font(12), 'Diagonal:'))
                         STATE = "UB1"
                         break
                     
@@ -734,6 +743,9 @@ while run:
                         dropdown.handle_event(event)
                     
                     if dropdown.name == "dp2":
+                        dropdown.handle_event(event)
+                    
+                    if dropdown.name == "dp3":
                         dropdown.handle_event(event)
 
                 
