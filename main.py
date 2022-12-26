@@ -1,4 +1,5 @@
 import pygame as pygame
+import math
 
 from utils import *
 
@@ -64,6 +65,10 @@ def draw_mouse_position_text(win):
                 break
             if button.name == "Line":
                 text_surface = pos_font.render("Line", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
+            if button.name == "Dotted-Line":
+                text_surface = pos_font.render("Dotted Line", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
             if button.name == "Pen":
@@ -555,6 +560,206 @@ AntiAliasingGrid = []
 draw_button = Button(5, HEIGHT - TOOLBAR_HEIGHT/2 - 30, 60, 60, drawing_color)
 buttons.append(draw_button)
 
+# *************************Draw Normal Straight LINE Starts****************
+line_draw_count = 0
+start_line, end_line = {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
+first_coord_chosen = False
+
+def same_row_diff_col(start, end, start_col_bigger):
+    global line_draw_count, start_line, end_line, grid
+    if start_col_bigger:
+        for num in range(end["col"], start["col"] + 1):
+            grid[start["row"]][num] = drawing_color
+    else:
+        for num in range(start["col"] + 1, end["col"] + 1):
+            grid[start["row"]][num] = drawing_color
+    line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
+
+def same_col_diff_row(start, end, start_row_bigger):
+    global line_draw_count, start_line, end_line, grid
+    if start_row_bigger:
+        for num in range(end["row"], start["row"]):
+            grid[num][start["col"]] = drawing_color
+    else:
+        for num in range(start["row"] + 1, end["row"] + 1):
+            grid[num][start["col"]] = drawing_color
+    line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
+
+def end_col_bigger_row_smaller(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1):
+        row_to_color, col_to_color = start["row"] - count, start["col"] + count
+        if row_to_color >= end["row"] or col_to_color <= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def end_col_bigger_row_bigger(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1):
+        row_to_color, col_to_color = start["row"] + count, start["col"] + count
+        if row_to_color <= end["row"] or col_to_color <= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def end_col_smaller_row_smaller(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1):
+        row_to_color, col_to_color = start["row"] - count, start["col"] - count
+        if row_to_color >= end["row"] or col_to_color >= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def end_col_smaller_row_bigger(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1):
+        row_to_color, col_to_color = start["row"] + count, start["col"] - count
+        if row_to_color <= end["row"] or col_to_color >= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def diff_col_diff_row(start, end):
+    global line_draw_count, start_line, end_line
+    if end["col"] > start["col"]:
+        if end["row"] < start["row"]:
+            end_col_bigger_row_smaller(start, end)
+        else:
+            end_col_bigger_row_bigger(start, end)
+    else:
+        if end["row"] < start["row"]:
+            end_col_smaller_row_smaller(start, end)
+        else:
+            end_col_smaller_row_bigger(start, end)
+    line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
+
+def draw_full_straight_line(row_num, col_num):
+    global line_draw_count, start_line, end_line
+    if line_draw_count == 0:
+        start_line["row"], start_line["col"] = row_num, col_num
+        grid[row_num][col_num] = drawing_color
+        line_draw_count = 1
+
+    elif line_draw_count == 1:
+        end_line["row"], end_line["col"] = row_num, col_num
+        if start_line["row"] == end_line["row"] and start_line["col"] != end_line["col"]:
+            if start_line["col"] < end_line["col"]:
+                same_row_diff_col(start_line, end_line, False)
+            else:
+                same_row_diff_col(start_line, end_line, True)
+
+        elif start_line["col"] == end_line["col"] and start_line["row"] != end_line["row"]:
+            if start_line["row"] < end_line["row"]:
+                same_col_diff_row(start_line, end_line, False)
+            else:
+                same_col_diff_row(start_line, end_line, True)
+
+        elif start_line["col"] != end_line["col"] and start_line["row"] != end_line["row"]:
+            diff_col_diff_row(start_line, end_line)
+        
+        else:
+            grid[start_line["row"]][start_line["col"]] = drawing_color
+            line_draw_count = 0 
+
+# *************************Draw Normal Straight LINE Ends****************
+
+
+# *************************Draw Dotted Straight LINE Starts****************
+
+def same_row_diff_col_dotted(start, end, start_col_bigger):
+    global line_draw_count, start_line, end_line, grid
+    if start_col_bigger:
+        for num in range(end["col"], start["col"] + 1, 2):
+            grid[start["row"]][num] = drawing_color
+    else:
+        for num in range(start["col"] + 1, end["col"] + 1, 2):
+            grid[start["row"]][num] = drawing_color
+    line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
+
+def same_col_diff_row_dotted(start, end, start_row_bigger):
+    global line_draw_count, start_line, end_line, grid
+    if start_row_bigger:
+        for num in range(end["row"], start["row"], 2):
+            grid[num][start["col"]] = drawing_color
+    else:
+        for num in range(start["row"] + 1, end["row"] + 1, 2):
+            grid[num][start["col"]] = drawing_color
+    line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
+
+def end_col_bigger_row_smaller_dotted(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1, 2):
+        row_to_color, col_to_color = start["row"] - count, start["col"] + count
+        if row_to_color >= end["row"] or col_to_color <= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def end_col_bigger_row_bigger_dotted(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1, 2):
+        row_to_color, col_to_color = start["row"] + count, start["col"] + count
+        if row_to_color <= end["row"] or col_to_color <= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def end_col_smaller_row_smaller_dotted(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1, 2):
+        row_to_color, col_to_color = start["row"] - count, start["col"] - count
+        if row_to_color >= end["row"] or col_to_color >= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def end_col_smaller_row_bigger_dotted(start, end):
+    global grid
+    hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
+    for count in range(0, hypotenuse + 1, 2):
+        row_to_color, col_to_color = start["row"] + count, start["col"] - count
+        if row_to_color <= end["row"] or col_to_color >= end["col"]:
+            grid[row_to_color][col_to_color] = drawing_color
+
+def diff_col_diff_row_dotted(start, end):
+    global line_draw_count, start_line, end_line
+    if end["col"] > start["col"]:
+        if end["row"] < start["row"]:
+            end_col_bigger_row_smaller_dotted(start, end)
+        else:
+            end_col_bigger_row_bigger_dotted(start, end)
+    else:
+        if end["row"] < start["row"]:
+            end_col_smaller_row_smaller_dotted(start, end)
+        else:
+            end_col_smaller_row_bigger_dotted(start, end)
+    line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
+
+def draw_dotted_straight_line(row_num, col_num):
+    global line_draw_count, start_line, end_line
+    if line_draw_count == 0:
+        start_line["row"], start_line["col"] = row_num, col_num
+        grid[row_num][col_num] = drawing_color
+        line_draw_count = 1
+
+    elif line_draw_count == 1:
+        end_line["row"], end_line["col"] = row_num, col_num
+        if start_line["row"] == end_line["row"] and start_line["col"] != end_line["col"]:
+            if start_line["col"] < end_line["col"]:
+                same_row_diff_col_dotted(start_line, end_line, False)
+            else:
+                same_row_diff_col_dotted(start_line, end_line, True)
+
+        elif start_line["col"] == end_line["col"] and start_line["row"] != end_line["row"]:
+            if start_line["row"] < end_line["row"]:
+                same_col_diff_row_dotted(start_line, end_line, False)
+            else:
+                same_col_diff_row_dotted(start_line, end_line, True)
+
+        elif start_line["col"] != end_line["col"] and start_line["row"] != end_line["row"]:
+            diff_col_diff_row_dotted(start_line, end_line)
+        
+        else:
+            grid[start_line["row"]][start_line["col"]] = drawing_color
+            line_draw_count = 0 
+
+# *************************Draw Dotted Straight LINE ends******************
+
 while run:
     clock.tick(FPS) #limiting FPS to 60 or any other value
 
@@ -570,6 +775,12 @@ while run:
 
                 if STATE == "COLOR":
                     paint_using_brush(row, col, BRUSH_SIZE)
+
+                elif STATE == "LINE":
+                    draw_full_straight_line(row, col)
+
+                elif STATE == "DOTTED-LINE":
+                    draw_dotted_straight_line(row, col)
 
                 elif STATE == "FILL":
                     fill_bucket(row, col, drawing_color)
@@ -588,7 +799,7 @@ while run:
                     
                 elif STATE == "CB2":
                     paint_using_custom_brush_2(row, col, drawing_color)
-                            
+                
 
             except IndexError:
                 for button in buttons:
@@ -599,6 +810,7 @@ while run:
                         grid = init_grid(ROWS, COLS, BG_COLOR)
                         drawing_color = BLACK
                         draw_button.color = drawing_color
+                        line_draw_count = 0
                         STATE = "COLOR"
                         break
 
@@ -651,8 +863,16 @@ while run:
                         FIX_SIZE = True
                         break
 
-
+                    if button.name == "Line":
+                        STATE = "LINE"
+                        dotted_line_btn = Button(WIDTH - 11.5*button_space, button_y_top_row,button_width-5, button_height-5, name = "Dotted-Line",image_url="assets/dotted_line.jpg")
+                        buttons.append(dotted_line_btn)
+                        break
                     
+                    if button.name == "Dotted-Line":
+                        STATE = "DOTTED-LINE"
+                        break
+
                     if button.name == "Arrow":
                         STATE = "ARROW"
                         MULTI_HEAD_BUTTON = Button(WIDTH - 11.5*button_space, button_y_top_row,button_width-5, button_height-5, name = "Multi-Head",image_url="assets/multihead.png")
@@ -696,6 +916,11 @@ while run:
             for button in buttons:
                 if button.name == "Multi-Head":
                     buttons.remove(button)
+
+    if STATE != "LINE" and STATE  != "DOTTED-LINE":
+        for button in buttons:
+            if button.name == "Dotted-Line":
+                buttons.remove(button)
     
     if STATE != "COLOR" and STATE !="CB1" and STATE !="CB2":
         for button in buttons:
