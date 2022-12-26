@@ -772,10 +772,12 @@ def same_row_diff_col_multi(start, end, start_col_bigger):
         for num in range(end["col"], start["col"] + 1):
             grid[start["row"]][num] = drawing_color
             grid[start["row"] + 2][num] = drawing_color
+        grid[start["row"] + 2][start["col"]] = drawing_color
     else:
         for num in range(start["col"] + 1, end["col"] + 1):
             grid[start["row"]][num] = drawing_color
             grid[start["row"] + 2][num] = drawing_color
+        grid[start["row"] + 2][start["col"]] = drawing_color
     line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
 
 def same_col_diff_row_multi(start, end, start_row_bigger):
@@ -784,10 +786,12 @@ def same_col_diff_row_multi(start, end, start_row_bigger):
         for num in range(end["row"], start["row"]):
             grid[num][start["col"]] = drawing_color
             grid[num][start["col"] + 2] = drawing_color
+        grid[start["row"]][start["col"] + 2] = drawing_color
     else:
         for num in range(start["row"] + 1, end["row"] + 1):
             grid[num][start["col"]] = drawing_color
             grid[num][start["col"] + 2] = drawing_color
+        grid[start["row"]][start["col"] + 2] = drawing_color
     line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
 
 def end_col_bigger_row_smaller(start, end):
