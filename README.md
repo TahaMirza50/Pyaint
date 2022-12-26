@@ -11,8 +11,8 @@ We have implemented these features:
 - [x] Arrows
 - [x] Multilines
 - [x] Shaped Brushes
-- [ ] Defining your own Brush
-- [ ] Brush custom width and height and definition
+- [x] Defining your own Brush
+- [x] Brush custom width and height and definition
 - [x] Antialiasing
 - [x] Pencil tool
 - [x] Pen tool
@@ -30,5 +30,5 @@ We have implemented these features:
   <img src="https://contrib.rocks/image?repo=owaisali8/Pyaint" />
 </a>
 
-## Screenshots:
+## Screenshot:
 <i>< will be added later ></i>
