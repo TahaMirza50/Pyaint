@@ -690,7 +690,7 @@ def same_col_diff_row_multi(start, end, start_row_bigger):
         grid[start["row"]][start["col"] + 2] = drawing_color
     line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
 
-def end_col_bigger_row_smaller(start, end):
+def end_col_bigger_row_smaller_multi(start, end):
     global grid
     hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
     for count in range(0, hypotenuse + 1):
@@ -699,7 +699,7 @@ def end_col_bigger_row_smaller(start, end):
             grid[row_to_color][col_to_color] = drawing_color
             grid[row_to_color + 2][col_to_color + 2] = drawing_color
 
-def end_col_bigger_row_bigger(start, end):
+def end_col_bigger_row_bigger_multi(start, end):
     global grid
     hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
     for count in range(0, hypotenuse + 1):
@@ -708,7 +708,7 @@ def end_col_bigger_row_bigger(start, end):
             grid[row_to_color][col_to_color] = drawing_color
             grid[row_to_color + 2][col_to_color - 2] = drawing_color
 
-def end_col_smaller_row_smaller(start, end):
+def end_col_smaller_row_smaller_multi(start, end):
     global grid
     hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
     for count in range(0, hypotenuse + 1):
@@ -717,7 +717,7 @@ def end_col_smaller_row_smaller(start, end):
             grid[row_to_color][col_to_color] = drawing_color
             grid[row_to_color - 2][col_to_color + 2] = drawing_color
 
-def end_col_smaller_row_bigger(start, end):
+def end_col_smaller_row_bigger_multi(start, end):
     global grid
     hypotenuse = int(math.sqrt(((end["row"] - start["row"]) ** 2) + ((end["col"] - start["col"]) ** 2)))
     for count in range(0, hypotenuse + 1):
@@ -726,21 +726,21 @@ def end_col_smaller_row_bigger(start, end):
             grid[row_to_color][col_to_color] = drawing_color
             grid[row_to_color + 2][col_to_color + 2] = drawing_color
 
-def diff_col_diff_row(start, end):
+def diff_col_diff_row_multi(start, end):
     global line_draw_count, start_line, end_line
     if end["col"] > start["col"]:
         if end["row"] < start["row"]:
-            end_col_bigger_row_smaller(start, end)
+            end_col_bigger_row_smaller_multi(start, end)
         else:
             pass
-            end_col_bigger_row_bigger(start, end)
+            end_col_bigger_row_bigger_multi(start, end)
     else:
         if end["row"] < start["row"]:
             pass
-            end_col_smaller_row_smaller(start, end)
+            end_col_smaller_row_smaller_multi(start, end)
         else:
             pass
-            end_col_smaller_row_bigger(start, end)
+            end_col_smaller_row_bigger_multi(start, end)
     line_draw_count, start_line, end_line = 0, {"row" : 0, "col" : 0}, {"row" : 0, "col" : 0}
 
 def draw_full_straight_multiline(row_num, col_num):
@@ -765,7 +765,7 @@ def draw_full_straight_multiline(row_num, col_num):
                 same_col_diff_row_multi(start_line, end_line, True)
 
         elif start_line["col"] != end_line["col"] and start_line["row"] != end_line["row"]:
-            diff_col_diff_row(start_line, end_line)
+            diff_col_diff_row_multi(start_line, end_line)
         
         else:
             grid[start_line["row"]][start_line["col"]] = drawing_color
@@ -773,6 +773,7 @@ def draw_full_straight_multiline(row_num, col_num):
             line_draw_count = 0 
 
 # *************************Draw Full Multiline Ends**********************    
+ 
  
 
 while run:
