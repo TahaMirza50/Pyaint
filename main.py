@@ -103,6 +103,11 @@ def draw_mouse_position_text(win):
                 text_surface = pos_font.render("Snowflake", 1, BLACK)
                 win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
                 break
+            
+            if button.name =="Add-Brush":
+                text_surface = pos_font.render("Add Custom Brush", 1, BLACK)
+                win.blit(text_surface, (10 , HEIGHT - TOOLBAR_HEIGHT))
+                break
 
             r,g,b = button.color
             text_surface = pos_font.render("( " + str(r) + ", " + str(g) + ", " + str(b) + " )", 1, BLACK)
@@ -132,6 +137,12 @@ def draw(win, grid, buttons):
     for button in buttons:
         button.draw(win)
 
+    for dropdown in drop_downs:
+        dropdown.draw(win)
+        
+    for text in texts:
+        text.draw(win)
+        
     draw_brush_widths(win)
     draw_mouse_position_text(win)
     pygame.display.update()
@@ -363,6 +374,28 @@ def paint_using_custom_brush_2(row, col, color):
         grid[row -i][col + i] = drawing_color
         grid[row +i][col - i] = drawing_color
 
+
+def paint_using_user_brush(row, col, color):
+    height = int(drop_downs[0].selected_option)
+    width = int(drop_downs[1].selected_option)
+    diag = int(drop_downs[2].selected_option)
+    
+    grid[row][col] = drawing_color
+    
+    for i in range(height):
+        grid[row+i][col] = drawing_color
+        grid[row-i][col] = drawing_color
+        
+    for i in range(width):
+        grid[row][col+i] = drawing_color
+        grid[row][col-i] = drawing_color
+
+    for i in range(diag):
+        grid[row+i][col+i] = drawing_color
+        grid[row-i][col-i] = drawing_color
+        grid[row+i][col-i] = drawing_color
+        grid[row-i][col+i] = drawing_color
+
           
 def make_arrow(row, col, color):
     global LAST_POS, BRUSH_SIZE
@@ -534,6 +567,8 @@ button_space = 42
 
 # Adding Buttons
 buttons = []
+drop_downs = []
+texts = []
 
 for i in range(int(len(COLORS)/2)):
     buttons.append( Button(100 + button_space * i, button_y_top_row, button_width, button_height, COLORS[i]) )
@@ -921,7 +956,10 @@ while run:
                     
                 elif STATE == "CB2":
                     paint_using_custom_brush_2(row, col, drawing_color)
-                
+                    
+                elif STATE == "UB1":
+                    paint_using_user_brush(row, col, drawing_color)
+                            
 
             except IndexError:
                 for button in buttons:
@@ -959,7 +997,8 @@ while run:
                         FIX_SIZE = False
                         custom_brushes = []
                         custom_brushes.append(Button(WIDTH - 11.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB1", image_url="assets/Gradient-Brush.png"))
-                        custom_brushes.append(Button(WIDTH - 10.5*button_space, button_y_top_row,button_width-5, button_height-5, BLACK, name = "CB2", image_url="assets/Snowflake.png"))
+                        custom_brushes.append(Button(WIDTH - 11.5*button_space, button_y_bot_row,button_width-5, button_height-5, BLACK, name = "CB2", image_url="assets/Snowflake.png"))
+                        custom_brushes.append(Button(WIDTH - 10.5*button_space, button_y_bot_row,button_width-5, button_height-5, BLACK, name = "Add-Brush", image_url="assets/plus.png"))
                         buttons.extend(custom_brushes)
                         break
 
@@ -1011,6 +1050,16 @@ while run:
                         MULTI_HEAD = not MULTI_HEAD
                         break
                     
+                    if button.name == "Add-Brush":
+                        drop_downs.append(Dropdown(WIDTH - 7.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp1"))
+                        drop_downs.append(Dropdown(WIDTH - 5.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp2"))
+                        drop_downs.append(Dropdown(WIDTH - 9.5*button_space, button_y_top_row, 40, 25, get_font(12), ['1', '2', '3', '4', '5'], name="dp3"))
+                        texts.append(Text(WIDTH - 8.5*button_space, button_y_top_row+5, get_font(12), 'Height:'))
+                        texts.append(Text(WIDTH - 6.5*button_space, button_y_top_row+5, get_font(12), 'Width:'))
+                        texts.append(Text(WIDTH - 10.5*button_space-5, button_y_top_row+5, get_font(12), 'Diagonal:'))
+                        STATE = "UB1"
+                        break
+                    
                     if button.name == "Anti-Aliasing":
                         if (STATE == "PENCIL") or (STATE == "PEN") or (STATE == "FILL") or (STATE == "COLOR"): 
                             antialiasing_conversion(AntiAliasingGrid)
@@ -1036,6 +1085,16 @@ while run:
                         BRUSH_SIZE = 3
 
                     STATE = "COLOR"
+                
+                for dropdown in drop_downs:
+                    if dropdown.name == "dp1":
+                        dropdown.handle_event(event)
+                    
+                    if dropdown.name == "dp2":
+                        dropdown.handle_event(event)
+                    
+                    if dropdown.name == "dp3":
+                        dropdown.handle_event(event)
 
                 
     if STATE != "ARROW":
@@ -1052,12 +1111,16 @@ while run:
             if button.name == "Full-Multiline":
                 buttons.remove(button)
     
-    if STATE != "COLOR" and STATE !="CB1" and STATE !="CB2":
+    if STATE != "COLOR" and STATE !="CB1" and STATE !="CB2" and STATE != "UB1":
         for button in buttons:
             if button.name == "CB1":
                 buttons.remove(button)
-            if button.name == "CB2":
+            if button.name == "CB2" or button.name == "Add-Brush":
                 buttons.remove(button)
+                
+    if STATE != "UB1":
+        drop_downs = []
+        texts = []
                 
 
     draw(WIN, grid, buttons)
