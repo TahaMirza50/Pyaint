@@ -31,4 +31,4 @@ We have implemented these features:
 </a>
 
 ## Screenshot:
-<i>< will be added later ></i>
+<img src="https://github.com/owaisali8/Pyaint/blob/master/Screenshot/S1.png" style="height: 50%; width: 50%;"></img>
